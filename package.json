@@ -1,0 +1,39 @@
+{
+  "name": "react-native-fcsvn-app-installer",
+  "version": "1.0.0",
+  "description": "App installer internal for fcs (Supports iOS and Android)",
+  "main": "src/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fcsvndev/react-native-fcsvn-app-installer.git"
+  },
+  "keywords": [
+    "fcsvn",
+    "installer"
+  ],
+  "author": "fcsvn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fcsvndev/react-native-fcsvn-app-installer/issues"
+  },
+  "homepage": "https://github.com/fcsvndev/react-native-fcsvn-app-installer#readme",
+  "dependencies": {
+    "lodash": "^4.17.19",
+    "moment": "^2.27.0"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1",
+    "react-native": "^0.63.2"
+  },
+  "devDependencies": {
+    "@react-native-community/eslint-config": "^2.0.0",
+    "eslint": "^7.6.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.5",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "eslint-plugin-react-native": "^3.8.1",
+    "prettier": "^2.0.5"
+  }
+}
