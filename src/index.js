@@ -90,7 +90,7 @@ const FCSAppInstaller = ({
 
     const onConfirm = useCallback(async () => {
         setIsOpenModal(false)
-        downloadAndInstall(state.downloadUrl);
+        await downloadAndInstall(state.downloadUrl);
     }, [state]);
 
     const onCancel = useCallback(() => {
