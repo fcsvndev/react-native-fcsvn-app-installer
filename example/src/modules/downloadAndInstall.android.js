@@ -1,20 +1,18 @@
-import RNFetchBlob from "rn-fetch-blob";
+import { NativeModules } from 'react-native';
 import {TAG} from "../index";
 
-const android = RNFetchBlob.android
+const {FCSInstallerModule} = NativeModules;
 
 export const downloadAndInstall = async (url) => {
-  RNFetchBlob.config({
-    addAndroidDownloads: {
-      useDownloadManager: true,
-      title: 'FCS Installer',
-      description: 'An APK that will be installed',
-      mime: 'application/vnd.android.package-archive',
-      mediaScannable: true,
-      notification: true,
-    }
-  })
-      .fetch('GET', 'https://drive.google.com/uc?export=download&id=1jJ7Dx41XkLoZ7mEknLCEV-QZNe7hV2Cu')
-      .then(res => android.actionViewIntent(res.path(), 'application/vnd.android.package-archive'))
-      .catch(err => console.log(TAG, '[downloadAndInstall] failed', err))
+  console.log('ANDROID')
+  try {
+    const fileUri = await FCSInstallerModule.downloadAndInstall(
+        'https://drive.google.com/uc?export=download&id=1jJ7Dx41XkLoZ7mEknLCEV-QZNe7hV2Cu',
+        "com.fcscs.mHousekeeping_v3.5.2026.386-general-release.apk",
+        {smallIcon: "ic_launcher"}
+    );
+    console.log(TAG, "download success", fileUri);
+  } catch (e) {
+    console.log(TAG, "download failed", e);
+  }
 };
