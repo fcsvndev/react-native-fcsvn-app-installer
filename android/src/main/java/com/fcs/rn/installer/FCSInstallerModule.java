@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import com.fcs.rn.installer.Utils.FileProvider;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -16,6 +17,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,6 +28,7 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -61,7 +64,7 @@ public class FCSInstallerModule extends ReactContextBaseJavaModule implements Li
                         mPromise.reject(Constant.E_DOWNLOAD_FAILED, "download failed with reason = " + reason);
                     } else {
                         String localUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                        mPromise.resolve(localUri);
+                        installApk(Uri.parse(localUri).getPath(), mPromise);
                     }
                 }
             }
@@ -247,5 +250,55 @@ public class FCSInstallerModule extends ReactContextBaseJavaModule implements Li
         }
 
         return false;
+    }
+
+    public void installApk(final String path, final Promise promise) {
+        String mime = "application/vnd.android.package-archive";
+        try {
+            Uri uriForFile = FileProvider.getUriForFile(getCurrentActivity(),
+                    this.getReactApplicationContext().getPackageName() + ".provider", new File(path));
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                // Create the intent with data and type
+                Intent intent = new Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(uriForFile, mime);
+
+                // Set flag to give temporary permission to external app to use FileProvider
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                // Validate that the device can open the file
+                PackageManager pm = getCurrentActivity().getPackageManager();
+                if (intent.resolveActivity(pm) != null) {
+                     getCurrentActivity().startActivity(intent);
+                }
+
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW)
+                        .setDataAndType(Uri.parse("file://" + path), mime).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                 getCurrentActivity().startActivity(intent);
+            }
+
+            final LifecycleEventListener listener = new LifecycleEventListener() {
+                @Override
+                public void onHostResume() {
+                    promise.resolve(path);
+                    mReactContext.removeLifecycleEventListener(this);
+                }
+
+                @Override
+                public void onHostPause() {
+
+                }
+
+                @Override
+                public void onHostDestroy() {
+
+                }
+            };
+            mReactContext.addLifecycleEventListener(listener);
+        } catch (Exception ex) {
+            promise.reject("EUNSPECIFIED", ex.getLocalizedMessage());
+        }
     }
 }
