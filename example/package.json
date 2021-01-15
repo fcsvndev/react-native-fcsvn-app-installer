@@ -13,8 +13,7 @@
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-native": "0.63.4",
-    "react-native-fcsvn-app-installer": "../",
-    "rn-fetch-blob": "0.12.0"
+    "react-native-fcsvn-app-installer": "../"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
